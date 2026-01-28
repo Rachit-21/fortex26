@@ -1,0 +1,11 @@
+target:
+  url: "http://example.com"
+  scope:
+    include:
+      - "example.com"
+    exclude:
+      - "logout"
+auth:
+  type: "basic" # or form, token
+  username: "admin"
+  password: "password"
