@@ -67,7 +67,12 @@ class Orchestrator:
 
         if not attack_surface:
             self.log("[-] No attack surface found", "error")
-            return findings
+            return {
+                "findings": [],
+                "attack_surface": [],
+                "attack_plan": {},
+                "risk_level": "LOW"
+            }
 
         # -----------------------------
         # AI Attack Planning
@@ -207,4 +212,10 @@ class Orchestrator:
             self.log(f"[+] Report saved at: {path}", "success")
 
         self.log("[+] Orchestrator finished", "success")
-        return findings
+        
+        return {
+            "findings": findings,
+            "attack_surface": attack_surface,
+            "attack_plan": attack_plan,
+            "risk_level": "HIGH" if findings else "LOW" # Simple logic for now
+        }
