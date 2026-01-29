@@ -35,6 +35,8 @@
 
 ![Neural X Interface](samples/new.png)
 
+![Neural X Demo](samples/20260129-1137-32.8662190.mp4)
+
 ## ✨ Features
 
 ### Core Capabilities
