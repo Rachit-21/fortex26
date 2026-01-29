@@ -35,6 +35,10 @@
 
 ![Neural X Interface](samples/new.png)
 
+### 🎥 Demo Video
+
+Watch Neural X in action:
+
 ![Neural X Demo](https://github.com/Rachit-21/fortex26/raw/main/samples/20260129-1137-32.8662190.mp4)
 
 ## ✨ Features
