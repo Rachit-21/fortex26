@@ -31,6 +31,20 @@ class IDORTester:
         query = parse_qs(parsed.query)
 
         id_param = self._find_id_param(query)
+        
+        # If not in query, check explicit parameters
+        if not id_param:
+            explicit_params = endpoint.get("parameters", [])
+            id_param = self._find_id_param(explicit_params)
+            
+            # If found in explicit params but not in query, we can't easily iterate/replace 
+            # without constructing a new query param.
+            # For this fix, we will forcefully add it to query to test it.
+            if id_param and id_param not in query:
+                 # We don't know the original value, so we'll guess '1' or use a placeholder
+                 # This is a limitation, but better than nothing.
+                 query[id_param] = ["1"]
+
         if not id_param:
             return None
 

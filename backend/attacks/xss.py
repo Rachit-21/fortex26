@@ -26,17 +26,36 @@ class XSSTester:
         parsed = urllib.parse.urlparse(url)
         query_params = urllib.parse.parse_qs(parsed.query)
         
-        if not query_params:
+        # Combine URL query params with explicit params from ZAP
+        combined_params = copy.deepcopy(query_params)
+        
+        explicit_params = endpoint.get("parameters", [])
+        if isinstance(explicit_params, list):
+            for p in explicit_params:
+                if p not in combined_params:
+                    combined_params[p] = [""] # Initialize if missing
+
+        if not combined_params:
             return []
 
         findings = []
 
-        for param, values in query_params.items():
+        for param in combined_params.keys():
             for payload in self.payloads:
-                new_query = copy.deepcopy(query_params)
-                new_query[param] = [payload]
-                new_query_string = urllib.parse.urlencode(new_query, doseq=True)
-                new_url = urllib.parse.urlunparse(parsed._replace(query=new_query_string))
+                # 1. Inject into URL query if present there
+                if param in query_params:
+                    new_query = copy.deepcopy(query_params)
+                    new_query[param] = [payload]
+                    new_query_string = urllib.parse.urlencode(new_query, doseq=True)
+                    new_url = urllib.parse.urlunparse(parsed._replace(query=new_query_string))
+                else:
+                    # 2. Append as new query param if it was only discovered via ZAP (e.g. from form)
+                    # This converts non-GET params to GET for testing which is a heuristic 
+                    # but better than ignoring them.
+                    new_query = copy.deepcopy(query_params)
+                    new_query[param] = [payload]
+                    new_query_string = urllib.parse.urlencode(new_query, doseq=True)
+                    new_url = urllib.parse.urlunparse(parsed._replace(query=new_query_string))
 
                 try:
                     resp = requests.get(new_url, headers=self.headers, timeout=5, proxies=self.proxies)

@@ -86,10 +86,10 @@ class Orchestrator:
             self.log(f" - {r}")
 
         # -----------------------------
-        # Prepare IDOR Targets
+        # Prepare Targets
         # -----------------------------
-        self.log("[Step 8] Preparing IDOR endpoints", "step")
-        idor_targets = zap_surface_to_endpoints(
+        self.log("[Step 8] Preparing target endpoints", "step")
+        target_endpoints = zap_surface_to_endpoints(
             attack_surface=attack_surface,
             base_url=self.target_url.rstrip("/"),
         )
@@ -99,7 +99,7 @@ class Orchestrator:
             self.log("[AI] No IDOR attacks planned")
             # We continue to allow other tests to run
 
-        self.log(f"[+] {len(idor_targets)} endpoints ready for testing")
+        self.log(f"[+] {len(target_endpoints)} endpoints ready for testing")
 
         proxies = {
             "http": self.zap_proxy,
@@ -120,7 +120,7 @@ class Orchestrator:
                 proxies=proxies,
             )
 
-            findings.extend(idor.run(idor_targets))
+            findings.extend(idor.run(target_endpoints))
 
         # -----------------------------
         # Run AUTH Tests
@@ -135,7 +135,7 @@ class Orchestrator:
                 proxies=proxies,
             )
 
-            findings.extend(auth.run(idor_targets))
+            findings.extend(auth.run(target_endpoints))
 
         # -----------------------------
         # Run XSS Tests
@@ -150,7 +150,7 @@ class Orchestrator:
                 proxies=proxies,
             )
 
-            findings.extend(xss.run(idor_targets))
+            findings.extend(xss.run(target_endpoints))
 
         # -----------------------------
         # Run DOM-XSS Tests
@@ -165,7 +165,7 @@ class Orchestrator:
                 proxies=proxies,
             )
 
-            findings.extend(dom_xss.run(idor_targets))
+            findings.extend(dom_xss.run(target_endpoints))
 
         # -----------------------------
         # Severity Scoring
