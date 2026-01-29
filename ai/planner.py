@@ -1,20 +1,11 @@
 import json
 from typing import List, Dict
 
-
 class AIAttackPlanner:
     def __init__(self, llm_client=None):
-        """
-        llm_client is optional.
-        For hackathon safety, we use rule + reasoning hybrid.
-        """
         self.llm_client = llm_client
 
     def plan(self, attack_surface: List[Dict]) -> Dict:
-        """
-        Decide which attacks to run based on recon data
-        """
-
         plan = {
             "attacks": [],
             "reasoning": []
@@ -35,7 +26,6 @@ class AIAttackPlanner:
                     "endpoint": path,
                     "parameters": id_params
                 })
-
                 plan["reasoning"].append(
                     f"Endpoint '{path}' contains object identifier parameters "
                     f"{id_params}, indicating potential IDOR risk."
@@ -47,7 +37,6 @@ class AIAttackPlanner:
                     "type": "AUTH",
                     "endpoint": path,
                 })
-
                 plan["reasoning"].append(
                     f"Endpoint '{path}' appears to be an API endpoint and may require authentication."
                 )
@@ -58,7 +47,6 @@ class AIAttackPlanner:
                     "type": "XSS",
                     "endpoint": path,
                 })
-
                 plan["reasoning"].append(
                     f"Endpoint '{path}' accepts user-controlled input and may be vulnerable to XSS."
                 )
@@ -69,7 +57,6 @@ class AIAttackPlanner:
                     "type": "DOM-XSS",
                     "endpoint": path,
                 })
-
                 plan["reasoning"].append(
                     f"Page '{path}' may contain client-side JavaScript handling user input, "
                     "making it a candidate for DOM-based XSS."

@@ -1,28 +1,28 @@
 def zap_surface_to_endpoints(attack_surface, base_url):
     """
-    Convert ZAP attack surface output into endpoints usable by IDORTester
+    Converts ZAP attack surface to a list of endpoint dictionaries with full URLs.
     """
-
     endpoints = []
-
+    
     for item in attack_surface:
-        path = item.get("path")
-        params = item.get("parameters", [])
-
-        if not path or not params:
-            continue
-
-        # Build query string with dummy values
-        query = "&".join([f"{p}=1" for p in params])
+        # If we have the 'url' field (added in our fix), use it.
+        # But we need to make sure it is absolute.
+        # If it's relative, prepend base_url.
         
-        if path.startswith("http"):
-            full_url = f"{path}?{query}"
+        raw_url = item.get("url", item.get("path", ""))
+        
+        if raw_url.startswith("http"):
+            full_url = raw_url
         else:
-            full_url = f"{base_url}{path}?{query}"
-
+            # Handle relative paths safely
+            if not raw_url.startswith("/"):
+                raw_url = "/" + raw_url
+            full_url = base_url + raw_url
+            
         endpoints.append({
             "url": full_url,
             "method": item.get("method", "GET"),
+            "parameters": item.get("parameters", [])
         })
-
+        
     return endpoints

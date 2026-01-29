@@ -31,6 +31,8 @@ class Orchestrator:
     def run(self):
         print("\n[+] Orchestrator started")
         print("[+] Target:", self.target_url)
+        
+        findings = []
 
         # -----------------------------
         # ZAP Recon
@@ -53,7 +55,7 @@ class Orchestrator:
 
         if not attack_surface:
             print("[-] No attack surface found")
-            return
+            return findings
 
         # -----------------------------
         # AI Attack Planning
@@ -78,27 +80,28 @@ class Orchestrator:
         # Only proceed if AI planned IDOR
         if not any(a["type"] == "IDOR" for a in attack_plan["attacks"]):
             print("[AI] No IDOR attacks planned. Exiting.")
-            return
+            # We continue to allow other tests to run
 
         print(f"[+] {len(idor_targets)} endpoints ready for IDOR testing")
 
         if not idor_targets:
             print("[-] No ID-based endpoints discovered")
-            return
+            return findings
 
         # -----------------------------
         # Run IDOR Attacks
         # -----------------------------
-        print("\n[+] Running IDOR tests")
-        idor = IDORTester(
-            base_url=self.target_url,
-            headers={
-                # Add auth if needed
-                # "Authorization": "Bearer YOUR_TOKEN"
-            }
-        )
+        if any(a["type"] == "IDOR" for a in attack_plan["attacks"]):
+            print("\n[+] Running IDOR tests")
+            idor = IDORTester(
+                base_url=self.target_url,
+                headers={
+                    # Add auth if needed
+                    # "Authorization": "Bearer YOUR_TOKEN"
+                }
+            )
 
-        findings = idor.run(idor_targets)
+            findings.extend(idor.run(idor_targets))
 
         # -----------------------------
         # Run AUTH Tests
@@ -108,15 +111,11 @@ class Orchestrator:
 
             auth = AuthTester(
                 headers={
-                    # Example:
-                    # "Authorization": "Bearer USER_TOKEN"
+                    # Example
                 }
             )
 
-            auth_findings = auth.run(idor_targets)
-
-            for f in auth_findings:
-                findings.append(f)
+            findings.extend(auth.run(idor_targets))
 
         # -----------------------------
         # Run XSS Tests
@@ -130,10 +129,7 @@ class Orchestrator:
                 }
             )
 
-            xss_findings = xss.run(idor_targets)
-
-            for f in xss_findings:
-                findings.append(f)
+            findings.extend(xss.run(idor_targets))
 
         # -----------------------------
         # Run DOM-XSS Tests
@@ -147,10 +143,7 @@ class Orchestrator:
                 }
             )
 
-            dom_xss_findings = dom_xss.run(idor_targets)
-
-            for f in dom_xss_findings:
-                findings.append(f)
+            findings.extend(dom_xss.run(idor_targets))
 
         # -----------------------------
         # Severity Scoring
@@ -184,3 +177,4 @@ class Orchestrator:
             print("[+] No IDOR vulnerabilities found")
 
         print("\n[+] Orchestrator finished\n")
+        return findings

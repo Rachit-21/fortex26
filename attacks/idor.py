@@ -2,14 +2,7 @@ import copy
 import requests
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
-COMMON_ID_PARAMS = [
-    "id",
-    "user_id",
-    "account_id",
-    "order_id",
-    "profile_id",
-]
-
+COMMON_ID_PARAMS = ["id", "user_id", "account_id", "order_id", "profile_id"]
 
 class IDORTester:
     def __init__(self, base_url, headers=None):
@@ -29,9 +22,6 @@ class IDORTester:
             return value
 
     def test_endpoint(self, endpoint):
-        """
-        Tests a single endpoint for IDOR vulnerability
-        """
         url = endpoint.get("url")
         if not url:
             return None
@@ -49,31 +39,17 @@ class IDORTester:
         tampered_query = copy.deepcopy(query)
         tampered_query[id_param] = [tampered_value]
 
-        tampered_url = urlunparse(
-            parsed._replace(query=urlencode(tampered_query, doseq=True))
-        )
+        tampered_url = urlunparse(parsed._replace(query=urlencode(tampered_query, doseq=True)))
 
         print(f"[IDOR] Testing {tampered_url}")
 
         try:
-            original_resp = requests.get(
-                url,
-                headers=self.headers,
-                timeout=10,
-            )
-            tampered_resp = requests.get(
-                tampered_url,
-                headers=self.headers,
-                timeout=10,
-            )
+            original_resp = requests.get(url, headers=self.headers, timeout=10)
+            tampered_resp = requests.get(tampered_url, headers=self.headers, timeout=10)
         except requests.RequestException:
             return None
 
-        if (
-            original_resp.status_code == 200
-            and tampered_resp.status_code == 200
-            and original_resp.text != tampered_resp.text
-        ):
+        if (original_resp.status_code == 200 and tampered_resp.status_code == 200 and original_resp.text != tampered_resp.text):
             return {
                 "vulnerability": "IDOR",
                 "endpoint": url,
@@ -82,15 +58,12 @@ class IDORTester:
                 "tampered_id": tampered_value,
                 "impact": "Unauthorized access to another user's data",
             }
-
         return None
 
     def run(self, endpoints):
         findings = []
-
         for ep in endpoints:
             result = self.test_endpoint(ep)
             if result:
                 findings.append(result)
-
         return findings

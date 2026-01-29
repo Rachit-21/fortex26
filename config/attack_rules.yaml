@@ -1,9 +1,0 @@
-idor:
-  enabled: true
-  patterns:
-    - "/user/{id}"
-    - "id="
-xss:
-  enabled: true
-  payloads:
-    - "<script>alert(1)</script>"
