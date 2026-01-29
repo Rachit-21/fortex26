@@ -29,6 +29,11 @@
 - **🔧 Modular Architecture** - Extensible attack modules for different vulnerability types
 
 ---
+## 📸 Screenshots
+
+![Neural X Interface](samples/front.jpeg)
+
+![Neural X Interface](samples/new.png)
 
 ## ✨ Features
 
@@ -455,7 +460,7 @@ curl http://localhost:8080
 
 ---
 
-## 🚧 Roadmap
+## 🚧 Future Roadmap
 
 - [ ] Machine learning-based attack prioritization
 - [ ] Authenticated scanning support
@@ -479,11 +484,7 @@ Contributions are welcome! Please follow these steps:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
----
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
@@ -493,22 +494,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Built with ❤️ for ethical security testing
 
----
-
-## 🙏 Acknowledgments
-
-- [OWASP ZAP](https://www.zaproxy.org/) - The world's most widely used web app scanner
-- [OpenAI](https://openai.com/) - AI-powered attack planning
-- [FastAPI](https://fastapi.tiangolo.com/) - Modern Python web framework
-- [React](https://react.dev/) - Frontend framework
-- [TailwindCSS](https://tailwindcss.com/) - Utility-first CSS framework
 
 ---
 
-<div align="center">
 
-**⚡ Neural X - Intelligent Security Testing ⚡**
-
-[Report Bug](https://github.com/yourusername/fortex26/issues) • [Request Feature](https://github.com/yourusername/fortex26/issues)
-
-</div>
